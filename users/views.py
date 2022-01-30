@@ -16,7 +16,7 @@ def login(request):
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
         else:
-            messages.error(request, 'Проверьте логин и пароль или создайте нового пользователя.')
+            messages.error(request, 'Неверный логин и/или пароль!')
     else:
         form = UserLoginForm()
     context = {
@@ -31,6 +31,7 @@ def registration(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Вы успешно зарегистрировались!')
             return HttpResponseRedirect(reverse('users:login'))
         else:
             messages.error(request, 'Ошибка регистрации!')
