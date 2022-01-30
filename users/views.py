@@ -3,7 +3,7 @@ from users.forms import UserLoginForm, UserRegistrationForm
 from django.contrib import auth
 from django.urls import reverse
 
-
+from django.contrib import messages
 # Create your views here.
 def login(request):
     if request.method == 'POST':
@@ -15,6 +15,8 @@ def login(request):
             if user and user.is_active:  # if user - если есть в системе.
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
+        else:
+            messages.error(request, 'Проверьте логин и пароль или создайте нового пользователя.')
     else:
         form = UserLoginForm()
     context = {
@@ -30,6 +32,8 @@ def registration(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:login'))
+        else:
+            messages.error(request, 'Ошибка регистрации!')
     else:
         form = UserRegistrationForm()
     context = {
