@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.urls import reverse
 
 from django.contrib import messages
+from basket.models import Basket
 # Create your views here.
 def login(request):
     if request.method == 'POST':
@@ -55,6 +56,7 @@ def profile(request):
     context = {
         'title' : 'Профиль',
         'form' : form,
+        'baskets' : Basket.objects.filter(user=request.user),
     }
     return render(request, 'users/profile.html', context)
 
