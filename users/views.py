@@ -5,6 +5,10 @@ from django.urls import reverse
 
 from django.contrib import messages
 from basket.models import Basket
+
+from django.contrib.auth.decorators import login_required
+
+
 # Create your views here.
 def login(request):
     if request.method == 'POST':
@@ -40,11 +44,12 @@ def registration(request):
         form = UserRegistrationForm()
     context = {
         'title': 'Регистрация',
-        'form' : form,
+        'form': form,
     }
     return render(request, 'users/registration.html', context)
 
 
+@login_required
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
@@ -52,11 +57,11 @@ def profile(request):
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
-        form = UserProfileForm(instance=request.user) # instance для отображения полей объекта
+        form = UserProfileForm(instance=request.user)  # instance для отображения полей объекта
     context = {
-        'title' : 'Профиль',
-        'form' : form,
-        'baskets' : Basket.objects.filter(user=request.user),
+        'title': 'Профиль',
+        'form': form,
+        'baskets': Basket.objects.filter(user=request.user),
     }
     return render(request, 'users/profile.html', context)
 

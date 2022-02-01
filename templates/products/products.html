@@ -15,15 +15,23 @@
                 <h1 class="my-4">Чёрная икра</h1>
                 <div class="list-group">
                     {% for category in categories %}
-                        <a href="#" class="list-group-item">{{ category.name }}</a>
+                        <a href="#" class="list-group-item">{{ category.name }} +500р/человек</a>
                     {% endfor %}
                 </div>
 
             </div>
             <!-- /.col-lg-3 -->
 
-            <div class="col-lg-9">
 
+            <div class="col-lg-9">
+                {% if messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                         style="margin-top: 50px;">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
