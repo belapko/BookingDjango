@@ -1,7 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect
-from users.forms import UserLoginForm, UserRegistrationForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from django.contrib import auth
 from django.urls import reverse
+
+from django.contrib import messages
+from basket.models import Basket
+
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -15,6 +20,8 @@ def login(request):
             if user and user.is_active:  # if user - если есть в системе.
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
+        else:
+            messages.error(request, 'Неверный логин и/или пароль!')
     else:
         form = UserLoginForm()
     context = {
@@ -29,14 +36,34 @@ def registration(request):
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Вы успешно зарегистрировались!')
             return HttpResponseRedirect(reverse('users:login'))
+        else:
+            messages.error(request, 'Ошибка регистрации!')
     else:
         form = UserRegistrationForm()
     context = {
         'title': 'Регистрация',
-        'form' : form,
+        'form': form,
     }
     return render(request, 'users/registration.html', context)
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('users:profile'))
+    else:
+        form = UserProfileForm(instance=request.user)  # instance для отображения полей объекта
+    context = {
+        'title': 'Профиль',
+        'form': form,
+        'baskets': Basket.objects.filter(user=request.user),
+    }
+    return render(request, 'users/profile.html', context)
 
 
 def logout(request):

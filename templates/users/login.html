@@ -6,13 +6,28 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-5">
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert"
-                         style="margin-top: 50px;">
-                        <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    {% if messages or form.errors %}
+                        {% if form.errors %}
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                                 style="margin-top: 50px;">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                            {% for field in form %}
+                                {{ field.errors.as_ul }}
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                                 style="margin-top: 50px;">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        {% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                     </div>
+                    {% endif %}
                     <div class="card shadow-lg border-0 rounded-lg mt-5">
                         <div class="card-header"><h3 class="text-center font-weight-light my-4">Авторизация</h3>
                         </div>
@@ -20,7 +35,8 @@
                             <form action="{% url 'users:login' %}" method="post">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <label class="small mb-1" for="{{ form.username.id_for_label }}">Имя пользователя</label>
+                                    <label class="small mb-1" for="{{ form.username.id_for_label }}">Имя
+                                        пользователя</label>
                                     {{ form.username }}
                                 </div>
                                 <div class="form-group">
@@ -39,8 +55,8 @@
                             <div class="small"><a href="{% url 'products:index' %}">На главную</a></div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </main>
 {% endblock %}
