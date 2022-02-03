@@ -1,3 +1,6 @@
+import hashlib
+import random
+
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
 from users.models import User
@@ -32,18 +35,25 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
 
+    def save(self):
+        user = super(UserRegistrationForm, self).save()
+        user.is_active = False
+        salt = hashlib.sha1(str(random.random()).encode('utf8')).hexdigest()[:6]
+        user.activation_key = hashlib.sha1(str(user.email + salt).encode('utf8')).hexdigest()
+        user.save()
+        return user
 
 class UserProfileForm(UserChangeForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control py-4', 'placeholder': 'Имя пользователя', 'readonly' : True }))
+        'class': 'form-control py-4', 'placeholder': 'Имя пользователя', 'readonly': True}))
     email = forms.CharField(widget=forms.EmailInput(attrs={
-        'class': 'form-control py-4', 'placeholder': 'Адрес электронной почты', 'readonly' : True }))
+        'class': 'form-control py-4', 'placeholder': 'Адрес электронной почты', 'readonly': True}))
     first_name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Имя'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Фамилия'}))
     image = forms.ImageField(widget=forms.FileInput(attrs={
-        'class' : 'custom-file-input', 'placeholder' : 'Выберите изображение' }), required=False)
+        'class': 'custom-file-input', 'placeholder': 'Выберите изображение'}), required=False)
 
     class Meta:
         model = User

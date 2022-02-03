@@ -81,6 +81,7 @@ def admin_users_activate(request, id):
 
 
 # Read
+@user_passes_test(lambda u: u.is_staff)
 def admin_products(request):
     context = {
         'title' : 'Админка - Продукты',
@@ -90,6 +91,7 @@ def admin_products(request):
 
 
 # Update
+@user_passes_test(lambda u: u.is_staff)
 def admin_products_update(request, id):
     selected_product = Product.objects.get(id=id)
     if request.method == 'POST':
@@ -108,6 +110,7 @@ def admin_products_update(request, id):
 
 
 # Create
+@user_passes_test(lambda u: u.is_staff)
 def admin_products_create(request):
     if request.method == 'POST':
         form = ProductAdminUpdateForm(data=request.POST, files=request.FILES)
@@ -124,6 +127,7 @@ def admin_products_create(request):
 
 
 # Delete
+@user_passes_test(lambda u: u.is_staff)
 def admin_products_delete(request, id):
     product = Product.objects.get(id=id)
     product.delete()
