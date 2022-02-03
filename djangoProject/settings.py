@@ -131,3 +131,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 LOGIN_URL = '/users/login/'  # Для login_required
+
+DOMAIN_NAME = '127.0.0.1:8000'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = 'c2f3d3f87d55c2'
+EMAIL_HOST_PASSWORD = 'cdb6a7da306aed'
+EMAIL_PORT = '2525'
