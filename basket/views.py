@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
+from orders.models import Order
 
 # Create your views here.
 
@@ -39,22 +40,36 @@ def basket_remove(request, basket_id):
     basket.delete()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+
 #####
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 #####
 
-def basket_edit(request, id, quantity): # basket_id, basket_quantity
+def basket_edit(request, id, quantity):  # basket_id, basket_quantity
     if is_ajax(request=request):
         basket = Basket.objects.get(id=id)
-        if quantity > 0 and quantity <= basket.product.quantity :
+        if quantity > 0 and quantity <= basket.product.quantity:
             basket.quantity = quantity
             basket.save()
         elif quantity == 0:
             basket.delete()
     baskets = Basket.objects.filter(user=request.user)
     context = {
-        'baskets' : baskets
+        'baskets': baskets
     }
-    result = render_to_string('basket/basket.html', context) # Рендер страницы с обновлённым контекстом
-    return JsonResponse({'result' : result})
+    result = render_to_string('basket/basket.html', context)  # Рендер страницы с обновлённым контекстом
+    return JsonResponse({'result': result})
+
+def order_add(request, id):
+
+    basket = Basket.objects.get(id=id)
+    Order.objects.create(user=request.user, product=basket.product, quantity=basket.quantity)
+    product = Product.objects.get(id=basket.product.id)
+    product.quantity = 0
+    product.save()
+    basket.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
