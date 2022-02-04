@@ -3,7 +3,9 @@ import random
 
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
-from users.models import User
+from django.forms import models
+
+from users.models import User, UserProfile
 
 
 class UserLoginForm(AuthenticationForm):
@@ -43,6 +45,7 @@ class UserRegistrationForm(UserCreationForm):
         user.save()
         return user
 
+
 class UserProfileForm(UserChangeForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Имя пользователя', 'readonly': True}))
@@ -58,3 +61,13 @@ class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'image')
+
+
+class UserProfileFormAdd(models.ModelForm):
+    tagline = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control py-4', 'placeholder': 'Тэги'}))
+    gender = forms.RadioSelect()
+
+    class Meta:
+        model = UserProfile
+        fields = ('tagline', 'gender')
