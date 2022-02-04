@@ -1,8 +1,9 @@
 from django.core.mail import send_mail
+from django.db import transaction
 from django.shortcuts import render, HttpResponseRedirect
 
 import users.views
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileFormAdd
 from django.contrib import auth
 from django.urls import reverse
 
@@ -11,7 +12,6 @@ from basket.models import Basket
 
 from django.contrib.auth.decorators import login_required
 from djangoProject import settings
-
 
 # Create your views here.
 from users.models import User
@@ -57,19 +57,23 @@ def registration(request):
     return render(request, 'users/registration.html', context)
 
 
+@transaction.atomic  # Если одна из форм не сработает - откат всех изменений
 @login_required
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
+        profile_form = UserProfileFormAdd(request.POST, instance=request.user.userprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=request.user)  # instance для отображения полей объекта
+        profile_form = UserProfileFormAdd(instance=request.user.userprofile)
     context = {
         'title': 'Профиль',
         'form': form,
         'baskets': Basket.objects.filter(user=request.user),
+        'profile_form' : profile_form,
     }
     return render(request, 'users/profile.html', context)
 
@@ -85,6 +89,7 @@ def send_verify_mail(user):
     title = f'Подтвреждение учетной записи {user.username}'
     message = f'Для подтвреждения учетной записи {user.username} гостиницы "Чёрная Икра" перейдите по ссылке: {settings.DOMAIN_NAME}{verify_link}'
     return send_mail(title, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
 
 def verify(request, email, activation_key):
     try:
