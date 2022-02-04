@@ -21,9 +21,12 @@ def basket_add(request, product_id):
     baskets = Basket.objects.filter(user=request.user, product=product)  # Список корзин
 
     if not baskets.exists():  # Если список пустой - создаем
-        Basket.objects.create(user=request.user, product=product, quantity=1)
-        return HttpResponseRedirect(
-            request.META['HTTP_REFERER'])  # Перенаправляем пользователя туда же где было выполнено действие
+        if product.quantity == 0:
+            messages.error(request, 'Номер забронирован!')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+        else:
+            Basket.objects.create(user=request.user, product=product, quantity=1)
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])  # Перенаправляем пользователя туда же где было выполнено действие
     else:
         basket = baskets.first()
         if basket.quantity < product.quantity:
@@ -63,13 +66,8 @@ def basket_edit(request, id, quantity):  # basket_id, basket_quantity
     result = render_to_string('basket/basket.html', context)  # Рендер страницы с обновлённым контекстом
     return JsonResponse({'result': result})
 
-def order_add(request, id):
 
-    basket = Basket.objects.get(id=id)
-    Order.objects.create(user=request.user, product=basket.product, quantity=basket.quantity)
-    product = Product.objects.get(id=basket.product.id)
-    product.quantity = 0
-    product.save()
-    basket.delete()
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+
 

@@ -10,7 +10,10 @@ class Order(models.Model):
     quantity = models.PositiveIntegerField(default=0)
     created_timestamp = models.DateTimeField(auto_now_add=True)
 
-    def order_quantity(self):
-        basket = Basket.objects.get(user=self.user)
-        quantity = basket.quantity
-        return quantity
+    def sum(self):
+        if self.quantity == 1:
+            return self.product.price
+        else:
+            return self.product.price + 500 * self.quantity
+
+
