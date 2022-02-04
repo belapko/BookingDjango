@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 
+from orders.models import Order
 
 # Create your views here.
 
@@ -20,9 +21,12 @@ def basket_add(request, product_id):
     baskets = Basket.objects.filter(user=request.user, product=product)  # Список корзин
 
     if not baskets.exists():  # Если список пустой - создаем
-        Basket.objects.create(user=request.user, product=product, quantity=1)
-        return HttpResponseRedirect(
-            request.META['HTTP_REFERER'])  # Перенаправляем пользователя туда же где было выполнено действие
+        if product.quantity == 0:
+            messages.error(request, 'Номер забронирован!')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+        else:
+            Basket.objects.create(user=request.user, product=product, quantity=1)
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])  # Перенаправляем пользователя туда же где было выполнено действие
     else:
         basket = baskets.first()
         if basket.quantity < product.quantity:
@@ -39,22 +43,31 @@ def basket_remove(request, basket_id):
     basket.delete()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+
 #####
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 #####
 
-def basket_edit(request, id, quantity): # basket_id, basket_quantity
+def basket_edit(request, id, quantity):  # basket_id, basket_quantity
     if is_ajax(request=request):
         basket = Basket.objects.get(id=id)
-        if quantity > 0 and quantity <= basket.product.quantity :
+        if quantity > 0 and quantity <= basket.product.quantity:
             basket.quantity = quantity
             basket.save()
         elif quantity == 0:
             basket.delete()
     baskets = Basket.objects.filter(user=request.user)
     context = {
-        'baskets' : baskets
+        'baskets': baskets
     }
-    result = render_to_string('basket/basket.html', context) # Рендер страницы с обновлённым контекстом
-    return JsonResponse({'result' : result})
+    result = render_to_string('basket/basket.html', context)  # Рендер страницы с обновлённым контекстом
+    return JsonResponse({'result': result})
+
+
+
+
+
+

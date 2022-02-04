@@ -3,6 +3,7 @@ from django.db import transaction
 from django.shortcuts import render, HttpResponseRedirect
 
 import users.views
+from orders.models import Order
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileFormAdd
 from django.contrib import auth
 from django.urls import reverse
@@ -74,6 +75,7 @@ def profile(request):
         'form': form,
         'baskets': Basket.objects.filter(user=request.user),
         'profile_form' : profile_form,
+        'orders' : Order.objects.filter(user=request.user)
     }
     return render(request, 'users/profile.html', context)
 
