@@ -2,9 +2,9 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import render, HttpResponseRedirect
 
-import users.views
+# import users.views
 from orders.models import Order
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileFormAdd
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm  # , UserProfileFormAdd
 from django.contrib import auth
 from django.urls import reverse
 
@@ -63,19 +63,19 @@ def registration(request):
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
-        profile_form = UserProfileFormAdd(request.POST, instance=request.user.userprofile)
-        if form.is_valid() and profile_form.is_valid():
+        # profile_form = UserProfileFormAdd(request.POST, instance=request.user.userprofile)
+        if form.is_valid():  # and profile_form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=request.user)  # instance для отображения полей объекта
-        profile_form = UserProfileFormAdd(instance=request.user.userprofile)
+        # profile_form = UserProfileFormAdd(instance=request.user.userprofile)
     context = {
         'title': 'Профиль',
         'form': form,
         'baskets': Basket.objects.filter(user=request.user),
-        'profile_form' : profile_form,
-        'orders' : Order.objects.filter(user=request.user)
+        # 'profile_form' : profile_form,
+        'orders': Order.objects.filter(user=request.user)
     }
     return render(request, 'users/profile.html', context)
 

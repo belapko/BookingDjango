@@ -15,23 +15,23 @@ class User(AbstractUser):
     def is_activation_key_expired(self):
         return now() - self.date_joined > timedelta(hours=48)
 
-
-class UserProfile(models.Model):
-    MALE = 'M'
-    FEMALE = 'W'
-    GENDER_CHOICES = (
-        (MALE, 'М'),
-        (FEMALE, 'Ж')
-    )
-    user = models.OneToOneField(User, null=False, db_index=True, on_delete=models.CASCADE)
-    tagline = models.CharField(verbose_name='Тэги', max_length=128, blank=True)
-    gender = models.CharField(verbose_name='Пол', max_length=1, choices=GENDER_CHOICES, blank=True)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.userprofile.save()
-
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            UserProfile.objects.create(user=instance)
+#
+# class UserProfile(models.Model):
+#     MALE = 'M'
+#     FEMALE = 'W'
+#     GENDER_CHOICES = (
+#         (MALE, 'М'),
+#         (FEMALE, 'Ж')
+#     )
+#     user = models.OneToOneField(User, null=False, db_index=True, on_delete=models.CASCADE)
+#     tagline = models.CharField(verbose_name='Тэги', max_length=128, blank=True)
+#     gender = models.CharField(verbose_name='Пол', max_length=1, choices=GENDER_CHOICES, blank=True)
+#
+#     @receiver(post_save, sender=User)
+#     def save_user_profile(sender, instance, **kwargs):
+#         instance.userprofile.save()
+#
+#     @receiver(post_save, sender=User)
+#     def create_user_profile(sender, instance, created, **kwargs):
+#         if created:
+#             UserProfile.objects.create(user=instance)
