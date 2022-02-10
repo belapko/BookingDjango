@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import environ
+
 env = environ.Env()
 environ.Env.read_env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,18 +78,18 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 
 DATABASES = {
 
-    #SQLite3
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-
-    #PostgreSQL
+    # SQLite3 Local
     'default': {
-        'NAME' : 'djangoProject',
-        'ENGINE' : 'django.db.backends.postgresql',
-        'USER' : 'postgres',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+    # #PostgreSQL Deploy
+    # 'default': {
+    #     'NAME' : 'djangoProject',
+    #     'ENGINE' : 'django.db.backends.postgresql',
+    #     'USER' : 'postgres',
+    # }
 }
 
 # Password validation
@@ -148,3 +149,4 @@ EMAIL_PORT = '2525'
 
 SOCIAL_AUTH_VK_OAUTH2_KEY = env('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = env('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+

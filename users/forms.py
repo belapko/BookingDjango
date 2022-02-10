@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django import forms
 from django.forms import models
 
-from users.models import User, UserProfile
+from users.models import User # UserProfile
 
 
 class UserLoginForm(AuthenticationForm):
@@ -62,12 +62,12 @@ class UserProfileForm(UserChangeForm):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'image')
 
-
-class UserProfileFormAdd(models.ModelForm):
-    tagline = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'form-control py-4', 'placeholder': 'Тэги'}))
-    gender = forms.RadioSelect()
-
-    class Meta:
-        model = UserProfile
-        fields = ('tagline', 'gender')
+#
+# class UserProfileFormAdd(models.ModelForm):
+#     tagline = forms.CharField(widget=forms.TextInput(attrs={
+#         'class': 'form-control py-4', 'placeholder': 'Тэги'}))
+#     gender = forms.RadioSelect()
+#
+#     class Meta:
+#         model = UserProfile
+#         fields = ('tagline', 'gender')
